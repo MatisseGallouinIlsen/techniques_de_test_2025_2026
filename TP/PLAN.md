@@ -73,41 +73,79 @@ Ses fonctions devront forcément renvoyé des erreurs dans certains cas :
 A partir de ces informations on peut estimer les tests nécessaires pour chacune de ces fonctions et comment les réaliser : 
 
 - recupPointSet
-    - cas testé :
-     ID invalide
-    - description :
-     L’ID fourni ne respecte pas le format attendu
-    - méthode :
-     Appeler la fonction avec un ID vide ou un ID de mauvais type
-    - attendu :
-     Erreur INVALID_ID_FORMAT
+    - Test de comportement : 
+        - cas testé :
+        ID invalide
+        - description :
+        L’ID fourni ne respecte pas le format attendu
+        - méthode :
+        Appeler la fonction avec un ID vide ou un ID de mauvais type
+        - attendu :
+        Erreur INVALID_ID_FORMAT
 
-    - cas testé :
-     PointSet introuvable
-    - description :
-     Aucun pointset correspondant à l’ID donné
-    - méthode :
-     Simuler une réponse 404 du serveur point_set_manager à l'aide d'un mock
-    - attendu :
-     Erreur NO_POINTSET_FOUND
+        - cas testé :
+        PointSet introuvable
+        - description :
+        Aucun pointset correspondant à l’ID donné
+        - méthode :
+        Simuler une réponse 404 du serveur point_set_manager à l'aide d'un mock
+        - attendu :
+        Erreur NO_POINTSET_FOUND
 
-    - cas testé :
-     Serveur indisponible
-    - description :
-     Le serveur ne répond pas ou timeout
-    - méthode :
-     Simuler une absence de réponse du serveur
-    - attendu :
-     Erreur NO_RESPONSE_SERVER
+        - cas testé :
+        Serveur indisponible
+        - description :
+        Le serveur ne répond pas ou timeout
+        - méthode :
+        Simuler une absence de réponse du serveur
+        - attendu :
+        Erreur NO_RESPONSE_SERVER
 
-    - cas testé :
-     Récupération réussie
-    - description :
-     Le pointset est correctement retourné par le serveur
-    - méthode :
-     Simuler une réponse serveur avec le pointset à l'aide d'un mock
-    - attendu :
-     Retour des bytes du pointset
+        - cas testé :
+        Récupération réussie
+        - description :
+        Le pointset est correctement retourné par le serveur
+        - méthode :
+        Simuler une réponse serveur avec le pointset à l'aide d'un mock
+        - attendu :
+        Retour des bytes du pointset
+    
+    - Test de performance :
+        - cas testé : 
+         petit jeu de points
+        - description : 
+         Triangulation de 3 à 10 points aléatoires
+        - méthode : 
+         Générer un pointset aléatoire et mesurer le temps d’exécution
+        - attendu : 
+         Temps d’exécution rapide (ex : <10 ms)
+
+        - cas testé : 
+         jeu de points moyen
+        - description : 
+         Triangulation de 50 à 100 points aléatoires
+        - méthode : 
+         Générer un pointset de taille moyenne et mesurer le temps d’exécution
+        - attendu : 
+         Temps d’exécution raisonnable (ex : <200 ms)
+
+        - cas testé : 
+         jeu de points volumineux
+        - description : 
+         Triangulation de 500 à 1000 points
+        - méthode : 
+         Générer un pointset volumineux et mesurer le temps d’exécution
+        - attendu : 
+         La fonction termine sans crash, temps mesuré pour suivi des performances
+
+        - cas testé : 
+         points colinéaires
+        - description : 
+         Plus de 50 points alignés sur une même ligne
+        - méthode : 
+         Générer les points et exécuter la triangulation
+        - attendu : 
+         Fonction renvoie rapidement l’erreur INVALID_POINTSET
 
 - parsePointSet :
     - cas testé :
@@ -193,47 +231,84 @@ A partir de ces informations on peut estimer les tests nécessaires pour chacune
      Retour d’une liste de triangles
 
 - parseTriangle : 
-    - cas testé :
-     PointSet byte invalide
-    - description :
-     Le pointset binaire ne respecte pas le format attendu
-    - méthode :
-     Envoyer un bytearray incomplet ou mal structuré
-    - attendu :
-     Erreur INVALID_POINTSET_BYTE_FORMAT
+    - Test de Comportement : 
+        - cas testé :
+        PointSet byte invalide
+        - description :
+        Le pointset binaire ne respecte pas le format attendu
+        - méthode :
+        Envoyer un bytearray incomplet ou mal structuré
+        - attendu :
+        Erreur INVALID_POINTSET_BYTE_FORMAT
 
-    - cas testé :
-     Coordonnées invalides pour un triangle
-    - description :
-     Les indices ou points utilisés sont incorrects ou hors limite
-    - méthode :
-     Utiliser un triangle ayant des points avec des valeurs impossibles (Coordonnées invalides)
-    - attendu :
-     Erreur INVALID_TRIANGLE
+        - cas testé :
+        Coordonnées invalides pour un triangle
+        - description :
+        Les indices ou points utilisés sont incorrects ou hors limite
+        - méthode :
+        Utiliser un triangle ayant des points avec des valeurs impossibles (Coordonnées invalides)
+        - attendu :
+        Erreur INVALID_TRIANGLE
 
-    - cas testé :
-     Triangle dégénéré / colinéaire
-    - description :
-     Les trois points utilisés ne peuvent pas former un triangle
-    - méthode :
-     Points identiques ou colinéaires dans un triangle
-    - attendu :
-     Erreur INVALID_TRIANGLE
+        - cas testé :
+        Triangle dégénéré / colinéaire
+        - description :
+        Les trois points utilisés ne peuvent pas former un triangle
+        - méthode :
+        Points identiques ou colinéaires dans un triangle
+        - attendu :
+        Erreur INVALID_TRIANGLE
 
-    - cas testé :
-     Erreur d’encodage
-    - description :
-     Problème lors de la construction du binaire final
-    - méthode :
-     Simuler un buffer incorrect
-    - attendu :
-     Erreur ENCODING_ERROR
+        - cas testé :
+        Erreur d’encodage
+        - description :
+        Problème lors de la construction du binaire final
+        - méthode :
+        Simuler un buffer incorrect
+        - attendu :
+        Erreur ENCODING_ERROR
 
-    - cas testé :
-     Encodage réussi
-    - description :
-     Le pointset est correctement complété avec les triangles
-    - méthode :
-     Bytearray pointset valide + liste de triangles valide
-    - attendu :
-     Retour du bytearray final
+        - cas testé :
+        Encodage réussi
+        - description :
+        Le pointset est correctement complété avec les triangles
+        - méthode :
+        Bytearray pointset valide + liste de triangles valide
+        - attendu :
+        Retour du bytearray final
+    - Test de Performance : 
+        - cas testé :
+         conversion petit pointset
+        - description :
+         Pointset avec 3-10 points et 1-5 triangles
+        - méthode :
+         Parser et encoder le pointset en mesurant le temps d’exécution
+        - attendu :
+         Temps <10 ms
+
+        - cas testé :
+         conversion pointset moyen
+        - description :
+         Pointset de 50 points avec 100 triangles
+        - méthode :
+         Parser et encoder le pointset en mesurant le temps
+        - attendu :
+         Temps d’exécution raisonnable (ex : <200 ms)
+
+        - cas testé :
+         conversion pointset volumineux
+        - description :
+         Pointset de 500 points avec triangles générés automatiquement
+        - méthode :
+         Parser et encoder le pointset
+        - attendu :
+         Fonction termine sans crash, temps mesuré pour suivi
+
+        - cas testé :
+         encodage points invalides
+        - description :
+         Pointset valide avec triangle invalide (colinéaire)
+        - méthode :
+         Parser et encoder le pointset
+        - attendu :
+         Fonction renvoie rapidement l’erreur INVALID_TRIANGLE
